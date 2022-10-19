@@ -41,3 +41,4 @@ Install the dependencies: npm install
 Start the project: npm start
 Deployed backend is connected to the frontend project. If you want to setup the backend locally please change it in the .env file in src/.env
 
+
