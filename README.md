@@ -33,7 +33,8 @@ The lab scientist and the patient are the users of this system. Patients can boo
 
                 Procedure of setting up the project
 
-Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY
+Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY[Assignment 4_SEJ025.pdf](https://github.com/Malsha2000/Online-Laboratory-Management-System-Frontend/files/9824273/Assignment.4_SEJ025.pdf)
+
 Clone this repository: git clone
 Move into the project directory: cd YOUR_PROJECT_NAME
 Install the dependencies: npm install
