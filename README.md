@@ -31,7 +31,7 @@ The lab scientist and the patient are the users of this system. Patients can boo
  ● User Authentication : JWT
 
 
---------------------------------- Procedure of setting up the project--------------------------
+                Procedure of setting up the project
 
 Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY
 Clone this repository: git clone
