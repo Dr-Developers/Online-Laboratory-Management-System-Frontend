@@ -6,7 +6,7 @@ Group Number - SEJ018
 ---------------------------------Group Details-------------------------------------------------
 
     --Name--                  --Student ID--         --Username--
---Wilfred P.P.S. --                 --IT20601256--           --PoornaSankalana--
+Wilfred P.P.S.                  IT20601256            PoornaSankalana
 Wanni Arachchige H.S.           IT20606060            heshani9918        
 Pallewatta U.D.P.               IT20620820            Udul-D
 Jayakody J.A.M.G.               IT20150648            Malsha2000
