@@ -1,9 +1,8 @@
 # Online-Laboratory-Management-System-Frontend
-## Online Laboratory Management System Frontend - 3rd Year 1st Semester SPM Project
+**Online Laboratory Management System Frontend - 3rd Year 1st Semester SPM Project**
 
-### Group Number - SEJ018
-
-**Group Details**
+**Group Number - SEJ018**
+## Group Details
 
 | Name | Student ID | Username|
 |------|-------------|---------|
@@ -33,15 +32,15 @@ The lab scientist and the patient are the users of this system. Patients can boo
 - Database Solution : Mongo DB
 - User Authentication : JWT
 
+## Get Started
 
- **Procedure of setting up the project**
+**Procedure of setting up the project**
 
-Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY[Assignment 4_SEJ025.pdf](https://github.com/Malsha2000/Online-Laboratory-Management-System-Frontend/files/9824273/Assignment.4_SEJ025.pdf)
-
-Clone this repository: git clone
-Move into the project directory: cd YOUR_PROJECT_NAME
-Install the dependencies: npm install
-Start the project: npm start
-Deployed backend is connected to the frontend project. If you want to setup the backend locally please change it in the .env file in src/.env
+- Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY
+- Clone this repository: git clone
+- Move into the project directory: cd YOUR_PROJECT_NAME
+- Install the dependencies: npm install
+- Start the project: npm start
+- Deployed backend is connected to the frontend project. If you want to setup the backend locally please change it in the .env file in src/.env
 
 
