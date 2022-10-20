@@ -1,15 +1,18 @@
-            # Online-Laboratory-Management-System-Frontend
-Online Laboratory Management System Frontend - 3rd Year 1st Semester SPM Project
+#Online-Laboratory-Management-System-Frontend
+##Online Laboratory Management System Frontend - 3rd Year 1st Semester SPM Project
 
-Group Number - SEJ018
+###Group Number - SEJ018
 
-                              Group Details
+*Group Details*
 
-    --Name--                  --Student ID--         --Username--
-Wilfred P.P.S.                  IT20601256            PoornaSankalana
-Wanni Arachchige H.S.           IT20606060            heshani9918        
-Pallewatta U.D.P.               IT20620820            Udul-D
-Jayakody J.A.M.G.               IT20150648            Malsha2000
+| Name | Student ID | Username|
+|------|-------------|---------|
+| Wilfred P.P.S. | IT20601256 | PoornaSankalana |
+| Wanni Arachchige H.S. | IT20606060 | heshani9918 |       
+| Pallewatta U.D.P. | IT20620820 | Udul-D |
+| Jayakody J.A.M.G.| IT20150648 | Malsha2000 |
+
+
 
 
                                  Project Description
