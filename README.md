@@ -26,7 +26,7 @@ Medical laboratory management system is a web-based system that helps manage the
 The lab scientist and the patient are the users of this system. Patients can book an appointment to get the medical tests they need and get their lab reports within our system.
 
 
-**Technologies*
+**Technologies**
 
 - Frontend : React
 - Backend : Node JS, Express JS
