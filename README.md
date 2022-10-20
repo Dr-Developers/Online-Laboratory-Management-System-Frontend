@@ -34,6 +34,12 @@ The lab scientist and the patient are the users of this system. Patients can boo
 
 ## Get Started
 
+**Prerequisities**
+
+1. NodeJs environment installed
+2. Node package manager installed
+3. Javascript supported Browser
+
 **Procedure of setting up the project**
 
 - Move into your projects directory: cd ~/YOUR_PROJECTS_DIRECTORY
