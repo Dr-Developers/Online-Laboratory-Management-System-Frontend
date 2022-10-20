@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 //import './App.css';
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
@@ -10,15 +10,17 @@ import AddIcon from "@mui/icons-material/Add";
 import Icon from "@mui/material/Icon";
 import axios from "axios";
 import "antd/dist/antd.min.css";
-import Notification from "../Notification/index";
+import Footer from "./../../../Components/Footer/footer";
+import NavBar from "./../../../Components/NavBar/navbar2";
+//import Notification from "../Notification/index";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+
 import { DatePicker, Space } from "antd";
 
 function ViewReport() {
-	const [inputFields, setInputFields] = useState([
-		{ test: "", result: "", normalValues: "" },
-	]);
+	const [inputFields, setInputFields] = useState([[
+		{ test: "", result: "", normalValues: "", id:"" },
+	]]);
 
 	// const handleSubmit = (e) => {
 	//   e.preventDefault();
@@ -44,48 +46,161 @@ function ViewReport() {
 		setInputFields(values);
 	};
 
+	const [isOpen, setIsOpen] = useState(false);
 	const [notify, setNotify] = useState({
 		isOpen: false,
 		message: "",
 		type: "",
 	});
 
+	const toggle = () => {
+		setIsOpen(!isOpen);
+	};
 
-    const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
-    const toggle = () => {
-        setIsOpen(!isOpen);
-    };
+	let navigate = useNavigate();
+	
 
-    let navigate = useNavigate();
-
-    const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [Gender, setGender] = useState("male");
-	const [date, setDate] = useState(new Date("2000/01/01"));
+	const [gender, setGender] = useState("");
+	const [date, setDate] = useState("");
 	const [age, setAge] = useState("");
 	const [nic, setNic] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [testName, setTestName] = useState("");
 
-    useEffect(() => {
-        const getData = async () => {
-            setFirstName(location.state.firstName);
-            setLastName(location.state.lastName);
-            setGender(location.state.Gender);
-            setDate(location.state.date);
-            setAge(location.state.age);
-            setNic(location.state.nic);
-            setPhoneNumber(location.state.phoneNumber);
-            setTestName(location.state.testName);
-        };
-        getData();
-    }, [location]);
+	const error = document.getElementById("errorMessage");
 
-    console.log(testName);
+	const location = useLocation();
 
-    return (
+	// error handling
+	// const errorhandling = () => {
+	// 	if (
+	// 		firstName === "" ||
+	// 		lastName === "" ||
+	// 		Gender === "" ||
+	// 		date === "" ||
+	// 		age === "" ||
+	// 		nic === "" ||
+	// 		phoneNumber === "" ||
+	// 		testName === ""
+	// 	) {
+	// 		error.innerHTML =
+	// 			"* Fill out all the fields. (All the fields are required)";
+	// 	} else {
+	// 		error.innerHTML = "";
+	// 	}
+	// };
+	const id = window.location.pathname.split("/")[3];
+	console.log(id);
+	//  const getData = async () => {
+	// 	const response = await axios.get(`/api/report/${id}`)
+	// 	console.log(response.firstName)
+
+	// setFirstName(location.state.firstName);
+	// setLastName(location.state.lastName);
+	// setGender(location.state.Gender);
+	// setDate(location.state.testDate);
+	// setAge(location.state.age);
+	// setNic(location.state.nic);
+	// setPhoneNumber(location.state.phoneNumber);
+	// setTestName(location.state.testName);
+	// };
+	// getData();
+
+	useEffect(() => {
+		const getData = async () => {
+			// const response = await axios.get(`/api/report/${id}`)
+			console.log("hh");
+
+			setFirstName(location.state.firstName);
+			setLastName(location.state.lastName);
+			setGender(location.state.Gender);
+			setDate(location.state.testDate);
+			setAge(location.state.age);
+			setNic(location.state.nic);
+			setPhoneNumber(location.state.phoneNumber);
+			setTestName(location.state.testName);
+			setInputFields(location.state.testData);
+		};
+		getData();
+	}, [location]);
+
+	//console.log(firstName,lastName,Gender, date, age, nic, phoneNumber, testName);
+	const inputf = inputFields[0];
+	console.log(inputf);
+	// on submit function
+	const submit = async (e) => {
+		e.preventDefault();
+		console.log("InputFields", inputFields);
+		//const inputs = []
+		//result.push(inputFields)
+		//console.log("InputFields", result);
+		// errorhandling();
+		console.log(localStorage.getItem("authentication"));
+		//setResult(inputFields)
+
+		const data = {
+			firstName: firstName,
+			lastName: lastName,
+			Gender: gender,
+			date: date,
+			age: age,
+			nic: nic,
+			phoneNumber: phoneNumber,
+			testName: testName,
+			testData: inputFields,
+		};
+
+		console.log("result", data.result);
+
+		try {
+			await axios
+				.put(`api/report/update/${id}`, {
+					headers: {
+						authentication:
+							localStorage.getItem("authentication"),
+					},
+					data,
+				})
+				.then((res) => {
+					console.log("updated" + res.data);
+					//window.location.href = "/patient/report/all";
+					setNotify({
+						isOpen: true,
+						message: "Medical Report Updated Successfull!",
+						type: "success",
+					});
+					setFirstName("");
+					setLastName("");
+					setGender("");
+					setDate("");
+					setAge("");
+					setNic("");
+					setPhoneNumber("");
+					setTestName("");
+					setInterval(() => {
+						navigate("/patientReport/all");
+					}, 2500);
+				})
+
+				.catch((err) => {
+					console.log(err);
+					setNotify({
+						isOpen: true,
+						message: "Medical Report Update Failed!",
+						type: "error",
+					});
+				});
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	return (
 		<>
+		<NavBar />
+		<div className="bg-main-blue w-[100%] h-full">
 			<div class="overflow-x-auto">
 				<div className="flex justify-center item-center">
 					<div class="min-w-screen min-h-fit flex justify-center font-sans overflow-hidden">
@@ -96,7 +211,7 @@ function ViewReport() {
 								</h1>
 							</div>
 							<form
-								// onSubmit={submit}
+								onSubmit={submit}
 								className=" w-[100%] h-auto rounded-xl p-5">
 								<p
 									className="text-red-600 mb-10 text-sm"
@@ -108,18 +223,15 @@ function ViewReport() {
 									<div class="grid md:grid-cols-2 md:gap-6 px-20 py-5">
 										<div class="relative z-0 mb-6 w-full group">
 											<input
+												disabled
 												type="text"
 												name="firstName"
 												id="firstName"
 												class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
 												placeholder=" "
 												required=""
-												// onChange={(e) =>
-												// 	setFirstName(
-												// 		e.target.value,
-												// 	)
-												// }
-                                                
+												value={firstName}
+	
 											/>
 											<label
 												for="floating_email"
@@ -128,19 +240,17 @@ function ViewReport() {
 											</label>
 										</div>
 										<div class="relative z-0 mb-6 w-full group">
-											<input
+											 <input
+												disabled
 												type="text"
 												name="lastName"
 												id="lastName"
 												class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
 												placeholder=" "
 												required=""
-												// onChange={(e) =>
-												// 	setLastName(
-												// 		e.target.value,
-												// 	)
-												// }
-											/>
+												
+												value={lastName}
+											/> 
 											<label
 												for="lastName"
 												class="peer-focus:font-medium absolute text-sm text-button-blue dark:text-button-blue duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-button-blue peer-focus:dark:text-button-blue peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
@@ -157,20 +267,24 @@ function ViewReport() {
 												<li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+															disabled={gender !== "male"}
+															checked={gender === "male"}
 															id="radio-Male"
 															type="radio"
 															value="male"
 															name="list-radio"
+
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setGender(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setGender(
+																	e
+																		.target
+																		.value,
+																)
+															}
+															
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -182,20 +296,23 @@ function ViewReport() {
 												<li class="w-full border-b border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={gender !== "female"}
+														checked={gender === "female"}
 															id="radio-Female"
 															type="radio"
 															value="female"
 															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setGender(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setGender(
+																	e
+																		.target
+																		.value,
+																)
+															}
+															
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -207,14 +324,17 @@ function ViewReport() {
 											</ul>
 										</div>
 										<div class="relative z-0 mt-6 w-full group">
+											<input
+											disabled
+												type="text"
+												value={date.split("T")[0]}
+											/>
+
 											<Space
 												direction="vertical"
 												style={{ width: "100%" }}>
 												<DatePicker
 													placeholder="Select Date"
-													// onChange={(date) =>
-													// 	setDate(date)
-													// }
 													style={{
 														background:
 															"transparent",
@@ -232,6 +352,7 @@ function ViewReport() {
 									<div class="grid md:grid-cols-2 md:gap-6 px-20">
 										<div class="relative z-0 mb-6 w-full group">
 											<input
+											disabled
 												type="text"
 												name="nic"
 												id="nic"
@@ -239,9 +360,12 @@ function ViewReport() {
 												placeholder=" "
 												required=""
 												// onChange={(e) =>
-												// 	setNic(e.target.value)
+												// 	setNic(e.target.value,)
 												// }
+												value={nic}
+												
 											/>
+											
 											<label
 												for="nic"
 												class="peer-focus:font-medium absolute text-sm text-button-blue dark:text-button-blue duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-button-blue peer-focus:dark:text-button-blue peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
@@ -250,16 +374,17 @@ function ViewReport() {
 										</div>
 										<div class="relative z-0 mb-6 w-full group">
 											<input
+											disabled
 												type="text"
 												name="age"
 												id="age"
 												class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
 												placeholder=" "
-												
 												required=""
 												// onChange={(e) =>
 												// 	setAge(e.target.value)
 												// }
+												value={age}
 											/>
 											<label
 												for="age"
@@ -271,19 +396,21 @@ function ViewReport() {
 									<div class="grid md:grid-cols-1 md:gap-6 px-20">
 										<div class="relative z-0 mb-6 w-full group">
 											<input
+											disabled
 												type="text"
 												name="phone"
 												id="phone"
 												class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
-												placeholder=" "											
+												placeholder=" "
 												pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-													title="Enter phone number in this format ex: 077-456-7890"
+												title="Enter phone number in this format ex: 077-456-7890"
 												required="true"
-												// onChange={(e) =>
-												// 	setPhoneNumber(
-												// 		e.target.value,
-												// 	)
-												// }
+												onChange={(e) =>
+													setPhoneNumber(
+														e.target.value,
+													)
+												}
+												value={phoneNumber}
 											/>
 											<label
 												for="phone"
@@ -302,20 +429,22 @@ function ViewReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "bloodSugar"}
+														checked={testName === "bloodSugar"}
 															id="bloodSugar"
 															type="radio"
 															value="bloodSugar"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -327,20 +456,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "psa"}
+														checked={testName === "psa"}
 															id="psa"
 															type="radio"
 															value="psa"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -352,20 +483,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "fab"}
+														checked={testName === "fab"}
 															id="fab"
 															type="radio"
 															value="fab"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -377,20 +510,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "CardiacP"}
+														checked={testName === "CardiacP"}
 															id="CardiacP"
 															type="radio"
 															value="CardiacP"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -402,20 +537,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "esr"}
+														checked={testName === "esr"}
 															id="esr"
 															type="radio"
 															value="esr"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -427,20 +564,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "ggt"}
+														checked={testName === "ggt"}
 															id="ggt"
 															type="radio"
 															value="ggt"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -454,20 +593,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "ironS"}
+														checked={testName === "ironS"}
 															id="ironS"
 															type="radio"
 															value="ironS"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -479,20 +620,22 @@ function ViewReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "plateCount"}
+														checked={testName === "plateCount"}
 															id="plateCount"
 															type="radio"
 															value="plateCount"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-id"
@@ -504,20 +647,22 @@ function ViewReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "rProfile"}
+														checked={testName === "rProfile"}
 															id="rProfile"
 															type="radio"
 															value="rProfile"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -529,20 +674,22 @@ function ViewReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "urineRoutine"}
+														checked={testName === "urineRoutine"}
 															id="urineRoutine"
 															type="radio"
 															value="urineRoutine"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -554,20 +701,22 @@ function ViewReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "sChemistry"}
+														checked={testName === "sChemistry"}
 															id="sChemistry"
 															type="radio"
 															value="sChemistry"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -579,20 +728,22 @@ function ViewReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "hcv"}
+														checked={testName === "hcv"}
 															id="hcv"
 															type="radio"
 															value="hcv"
 															name="radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
-															// onChange={(
-															// 	e,
-															// ) =>
-															// 	setTestName(
-															// 		e
-															// 			.target
-															// 			.value,
-															// 	)
-															// }
+															onChange={(
+																e,
+															) =>
+																setTestName(
+																	e
+																		.target
+																		.value,
+																)
+															}
 														/>
 														<label
 															for="horizontal-list-radio-license"
@@ -607,8 +758,13 @@ function ViewReport() {
 									<hr className="h-1 bg-button-blue mb-5 mt-5" />
 									<div class="grid md:grid-cols-0 md:gap-6 px-20">
 										<div className="grid md:grid-colspan-4">
-											{inputFields.map(
-												(inputFields, index) => (
+											{inputFields?.map(
+												(ifields, index) => {
+													const dd = ifields[0];
+													console.log(ifields)
+													
+													return(
+														
 													<div key={index}>
 														<TextField
 															style={{
@@ -620,7 +776,7 @@ function ViewReport() {
 															label="Test"
 															variant="filled"
 															value={
-																inputFields.test
+																dd.test
 															}
 															// onChange={(
 															// 	event,
@@ -631,6 +787,9 @@ function ViewReport() {
 															// 	)
 															// }
 														/>
+														
+														{/* <input type="text" value={dd.test}/> */}
+														
 														<TextField
 															style={{
 																marginRight:
@@ -641,7 +800,7 @@ function ViewReport() {
 															label="Result"
 															variant="filled"
 															value={
-																inputFields.result
+																dd.result
 															}
 															// onChange={(
 															// 	event,
@@ -662,7 +821,7 @@ function ViewReport() {
 															label="Normal Values"
 															variant="filled"
 															value={
-																inputFields.normalValues
+																dd.normalValues
 															}
 															// onChange={(
 															// 	event,
@@ -687,8 +846,8 @@ function ViewReport() {
 															}>
 															<AddIcon />
 														</IconButton>
-													</div>
-												),
+													</div>)
+												},
 											)}
 										</div>
 										{/* <Button
@@ -697,7 +856,7 @@ function ViewReport() {
 											type="submit"
 											endIcon={<Icon>send</Icon>}
 											onClick={submit}>
-											Submit Report
+											Update Report
 										</Button> */}
 									</div>
 								</div>
@@ -707,6 +866,8 @@ function ViewReport() {
 				</div>
 			</div>
 			{/* <Notification notify={notify} setNotify={setNotify} /> */}
+			<Footer />
+			</div>
 		</>
 	);
 }

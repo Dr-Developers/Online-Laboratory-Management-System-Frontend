@@ -3,23 +3,62 @@ import React, { useEffect, useState } from "react";
 import ConfirmDialog from "../ConfirmDialog/index";
 import AvatarImage from "../../Assests/Man-Avatar.jpg";
 import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 export default function PatientTableView() {
 	const [patients, setPatients] = useState([]);
 
-	//fetching patient reports from the database
-	useEffect(() => {
-		const fetchReports = async () => {
-			const res = await axios.get("api/patient/", {
+	// pdf download
+	const columns = [
+		{ title: "First Name", field: "firstName" },
+		{ title: "Last Name", field: "lastName" },
+		{ title: "NIC", field: "nic" },
+		{ title: "Address", field: "address" },
+		{ title: "Date", field: "dateOfBirth" },
+		{ title: "Telephone", field: "phoneNumber" },
+	];
+
+	const dowloadPdf = () => {
+		const doc = new jsPDF();
+		doc.text("Patient Details Sheet", 50, 10);
+		doc.autoTable({
+			columns: columns.map((col) => ({
+				...col,
+				dataKey: col.field,
+			})),
+			body: patients,
+		});
+		doc.save("Patient Details Sheet");
+	};
+
+	// patient search
+	const getPatientData = async (searchFilter) => {
+		const patientFilterModel = {
+			searchFilter: searchFilter,
+		};
+
+		const response = await axios.post(
+			"api/patient/filter",
+			patientFilterModel,
+			{
 				headers: {
 					authentication: localStorage.getItem("authentication"),
 				},
-			});
-			setPatients(res.data);
-			console.log(res.data);
-		};
-		fetchReports();
+			},
+		);
+		console.log(response.data);
+		setPatients(response.data);
+	};
+
+	// onInput condition
+	const onSearchTextChanged = (searchFilter) => {
+		getPatientData(searchFilter);
+	};
+
+	//fetching patient reports from the database
+	useEffect(() => {
+		getPatientData();
 	}, []);
 
 	//for delete
@@ -42,17 +81,11 @@ export default function PatientTableView() {
 	//to here
 
 	// setting delete confirmation dialogue
-
 	const [confirmDialog, setConfirmDialog] = useState({
 		isOpen: false,
 		title: "",
 		subTitle: "",
 	});
-
-	// const navigate = useNavigate();
-	// const addReport = () => {
-	// 	navigate("/patient/report/add");
-	// };
 
 	return (
 		<>
@@ -66,12 +99,16 @@ export default function PatientTableView() {
 						<div class="grid md:grid-cols-2 w-[158%]">
 							<input
 								type="text"
-								placeholder="🔍 Enter Keyword to Search"
+								onInput={(event) =>
+									onSearchTextChanged(event.target.value)
+								} //7
+								placeholder="🔍 Enter NIC to Search"
 								className="p-2 w-80 bg-white rounded-full text-center focus:ring-0 focus:border-none"
 							/>
 
 							<button
 								type="button"
+								onClick={dowloadPdf}
 								className="text-base bg-button-blue text-white py-2 px-10 ml-20 rounded-full hover:drop-shadow-lg w-fit">
 								Download Patient List
 							</button>
@@ -177,40 +214,6 @@ export default function PatientTableView() {
 												</td>
 												<td class="py-3 px-6 text-center">
 													<div class="flex item-center justify-center">
-														<div class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																fill="none"
-																viewBox="0 0 24 24"
-																stroke="currentColor">
-																<path
-																	stroke-linecap="round"
-																	stroke-linejoin="round"
-																	stroke-width="2"
-																	d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-																/>
-																<path
-																	stroke-linecap="round"
-																	stroke-linejoin="round"
-																	stroke-width="2"
-																	d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-																/>
-															</svg>
-														</div>
-														<div class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																fill="none"
-																viewBox="0 0 24 24"
-																stroke="currentColor">
-																<path
-																	stroke-linecap="round"
-																	stroke-linejoin="round"
-																	stroke-width="2"
-																	d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-																/>
-															</svg>
-														</div>
 														<div class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
 															<svg
 																//delete

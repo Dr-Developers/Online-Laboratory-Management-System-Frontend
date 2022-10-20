@@ -5,6 +5,7 @@ import AvatarImage from "../../Assests/Man-Avatar.jpg";
 import axios from "axios";
 //import { Navigate, useNavigate } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
 
 const ReportTableView = () => {
 	const [reports, setReports] = useState([]);
@@ -37,7 +38,29 @@ const ReportTableView = () => {
                 },
             },
         );
-        console.log(response.data);
+		const tests = response.data.map(record => {
+			const obj0 = record.testData?.[0]?.[0];
+			const obj1 = record.testData?.[1]?.[0];
+			if (obj1 && obj0){
+				const dd =[ {
+					result: obj1.result,
+					test: obj1.test,
+					normalValues: obj1.normalValues,
+					
+				},{result1: obj0.result,
+					test1: obj0.test,
+					normalValues1: obj0.normalValues,}
+				]
+				return dd
+			}
+			else{
+				return {
+					result: obj0.result,
+					test: obj0.test,
+					normalValues: obj0.normalValues,
+				}}
+		})
+        console.log(tests);
         setReports(response.data);
     };//4
 
@@ -68,10 +91,42 @@ const ReportTableView = () => {
 		subTitle: "",
 	});
 
+	const Navigate = useNavigate();
+	const ViewReport = () => {
+		Navigate("/patientReport/view/:id", {
+		});
+	};
+
 	const Navigation = useNavigate();
 	const addReport = () => {
-		Navigation("/patient/report/add");
+		Navigation("/patientreport/add");
 	};
+
+	const handleView = async (id,
+        e,
+        firstName,
+        lastName,
+        Gender,
+        date,
+        age,
+		nic,
+		phoneNumber,
+		testName,
+		testData,)=>{
+			Navigation(`/patientReport/view/${id}`, {
+				state: {
+					firstName: firstName,
+					lastName: lastName,
+					Gender: Gender,
+					testDate: date,
+					age: age,
+					nic: nic,
+					phoneNumber: phoneNumber,
+					testName: testName,
+					testData: testData,
+				},
+			});
+	}
 
 	const handleUpdate = async (
         id,
@@ -87,7 +142,7 @@ const ReportTableView = () => {
 		testData,
 
     ) => {
-		
+		console.log(testData)
         Navigation(`/patientReport/update/${id}`, {
             state: {
 				firstName: firstName,
@@ -106,6 +161,30 @@ const ReportTableView = () => {
 	const rep = reports[0];
 	console.log(rep)
 
+	const columns = [
+		{ title: "First Name", field: "firstName" },
+		{ title: "Last Name", field: "lastName" },
+		{ title: "Gender", field: "Gender" },
+		{ title: "Date", field: "date" },
+		{ title: "NIC", field: "nic" },
+		{ title: "Phone Number", field: "phoneNumber" },
+		{ title: "Test Name", field: "testName" },
+		
+	];
+
+	const downLoadPdf = () => {
+		const doc = new jsPDF();
+		doc.text(" Lab test done patients", 50, 10);
+		doc.autoTable({
+			columns: columns.map((col) => ({
+				...col,
+				dataKey: col.field,
+			})),
+			body: reports,
+		});
+		doc.save("All Lab Test Done Patients Sheet");
+	};
+
 	const onSearchTextChanged = (searchFilter) => {
         getReportData(searchFilter);
     }; //6
@@ -119,7 +198,7 @@ const ReportTableView = () => {
 							Patient Report Table
 						</h1>
 
-						<div class="grid md:grid-cols-2">
+						<div class="grid md:grid-cols-3">
 							<input
 								type="text"
 								placeholder="🔍 Enter Keyword to Search"
@@ -134,13 +213,23 @@ const ReportTableView = () => {
 
 								} //7
 							/>
-
+                            
 							<button
 								type="button"
 								onClick={addReport}
 								className="text-base bg-button-blue text-white py-2 mb-12 px-5 rounded-full hover:drop-shadow-lg w-1/2">
-								+ Add Reports
+								Add Reports
+								
 							</button>
+							<button
+								type="button"
+								
+								className="text-base bg-button-blue text-white py-2 mb-12 px-5 rounded-full hover:drop-shadow-lg w-80" onClick={() => downLoadPdf()}>
+								Download Tested Patients List
+								
+							</button>
+							
+							
 						</div>
 						<div class="bg-white shadow-md rounded-2xl my-6">
 							<table class="min-w-max w-full table-auto">
@@ -163,6 +252,9 @@ const ReportTableView = () => {
 										</th>
 										<th class="py-3 px-6 text-center">
 											Age
+										</th>
+										<th class="py-3 px-6 text-center">
+											Test Name
 										</th>
 										<th class="py-3 px-6 text-center">
 											Actions
@@ -232,9 +324,32 @@ const ReportTableView = () => {
 													</div>
 												</td>
 												<td class="py-3 px-6 text-center">
+													<span
+														id="gender"
+														class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs capitalize">
+														{r.testName}
+													</span>
+												</td>
+												<td class="py-3 px-6 text-center">
 													<div class="flex item-center justify-center">
 														<div class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
 															<svg
+															// onClick={ViewReport}
+															onClick={(e) =>
+                                                                handleView(
+                                                                    r._id,
+                                                                    e,
+                                                                    r.firstName,
+                                                                    r.lastName,
+                                                                    r.Gender,
+                                                                    r.date,
+                                                                    r.age,
+		                                                            r.nic,
+		                                                            r.phoneNumber,
+		                                                            r.testName,
+		                                                            r.testData,
+                                                                )
+                                                            }
 																xmlns="http://www.w3.org/2000/svg"
 																fill="none"
 																viewBox="0 0 24 24"

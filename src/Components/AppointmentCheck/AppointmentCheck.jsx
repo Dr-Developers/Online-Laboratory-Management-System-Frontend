@@ -3,7 +3,6 @@ import axios from "axios";
 import Notification from "../Notification/index";
 import "antd/dist/antd.min.css";
 import { DatePicker, Space } from "antd";
-import { TimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { Navigate, useNavigate } from "react-router-dom";
 import { TimePicker } from "antd";
 
@@ -11,6 +10,8 @@ function GetDateAndTime() {
 	const [date, setDate] = useState(new Date("2000/01/01"));
 	const [time, setTime] = useState("");
 	const [open, setOpen] = useState(false);
+	const [enableAppointment, setEnableAppointment] =
+		React.useState(false);
 
 	console.log("time", time);
 	localStorage.setItem("date", date);
@@ -28,14 +29,10 @@ function GetDateAndTime() {
 
 	const Navigation = useNavigate();
 	const makeAppointment = (dat, tim) => {
-		Navigation("/patient/appointment/add", {
+		Navigation("/appointment/add", {
 			state: { date: dat, time: tim },
 		});
 	};
-
-	//const timeValue: Date = new Date("01/01/2021 08:30 AM");
-	//const minTime: Date = new Date("01/02/2021 01:00 AM");
-	//const maxTime: Date = new Date("01/02/2021 12:00 PM");
 
 	const error = document.getElementById("errorMessage");
 
@@ -63,35 +60,33 @@ function GetDateAndTime() {
 
 		try {
 			await axios
-				.get("/api/appointment", {
+				.post("/api/appointment/check", {
 					headers: {
 						authentication:
 							localStorage.getItem("authentication"),
 					},
+					data,
 				})
-				.then((res) => {
-					console.log("check date and time", res);
-					if (res.data.date === date && res.data.time === time) {
+				.then((response) => {
+					console.log("response", response);
+					if (!response.data.isExsists) {
 						setNotify({
 							isOpen: true,
-							message: "Available!",
+							message: response.data.message,
 							type: "success",
 						});
+						setEnableAppointment(true);
 					} else {
 						setNotify({
 							isOpen: true,
-							message: "Not Available!",
+							message: response.data.message,
 							type: "error",
 						});
+						setEnableAppointment(false);
 					}
 				})
 				.catch((err) => {
 					console.log(err);
-					setNotify({
-						isOpen: true,
-						message: "Not Available!",
-						type: "error",
-					});
 				});
 		} catch (error) {
 			console.log(error);
@@ -111,7 +106,7 @@ function GetDateAndTime() {
 						<div className="flex justify-center items-center">
 							<form
 								onSubmit={submit}
-								className="bg-white w-[55%] h-auto p-14 rounded-xl mt-5 ">
+								className="bg-white w-[55%] h-auto p-14 rounded-xl mt-5 mb-10">
 								<p
 									className="text-red-600 mb-6 text-sm"
 									id="errorMessage"
@@ -162,16 +157,6 @@ function GetDateAndTime() {
 												</label>
 											</div>
 											<div class="relative z-0 mb-6 w-full group">
-												{/* <TimePickerComponent placeholder="Select a Time"
-											required=""
-											onChange={(e) =>
-												setTime(e.target.value)}
-											//value={setTime}
-											// min={minTime}
-											// max={maxTime}
-											//format="HH:mm"
-											//</div>step={60}
-											/> */}
 												<TimePicker
 													use12Hours
 													open={open}
@@ -182,17 +167,7 @@ function GetDateAndTime() {
 													className="w-full"
 												/>
 											</div>
-											{/* <input
-										type="text"
-										name="floating_phone"
-										id="floating_phone"
-										class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
-										placeholder=" "
-										required=""
-										onChange={(e) =>
-											setTime(e.target.value)
-										}
-									/> */}
+
 											<div class="grid md:grid-cols-1 md:gap-6">
 												<div class="relative z-0 mb-2 w-full group flex justify-center items-center">
 													<button
@@ -205,15 +180,17 @@ function GetDateAndTime() {
 
 											<div class="grid md:grid-cols-1 md:gap-2">
 												<div class="relative z-0 mb-6 w-full group flex justify-center items-center">
-													<button
-														type="button"
-														onClick={
-															makeAppointment
-														}
-														class="text-white bg-button-blue hover:bg-button-hover-blue focus:outline-none font-medium rounded-full text-sm w-full sm:w-auto px-[234px] py-2.5 text-center dark:bg-button-blue dark:hover:bg-button-hover-blue mt-5">
-														Make Your
-														Appointment
-													</button>
+													{enableAppointment && (
+														<button
+															type="button"
+															onClick={
+																makeAppointment
+															}
+															class="text-white bg-button-blue hover:bg-button-hover-blue focus:outline-none font-medium rounded-full text-sm w-full sm:w-auto px-[234px] py-2.5 text-center dark:bg-button-blue dark:hover:bg-button-hover-blue mt-5">
+															Make Your
+															Appointment
+														</button>
+													)}
 												</div>
 											</div>
 										</div>

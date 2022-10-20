@@ -53,6 +53,9 @@ const Login = () => {
 					localStorage.setItem("isLoggedIn", true);
 					localStorage.setItem("roleData", result.data.roleData);
 					localStorage.setItem("id", result.data.roleData._id);
+
+					localStorage.setItem("role", result.data.role);
+
 					localStorage.setItem(
 						"fname",
 						result.data.roleData.firstName,
@@ -62,8 +65,13 @@ const Login = () => {
 						result.data.roleData.lastName,
 					);
 					setInterval(() => {
-						navigate("/");
-						window.location.reload();
+						if (result.data.roleData.isPatient === true) {
+							navigate("/");
+							window.location.reload();
+						} else {
+							navigate("/labassistant/dashboard");
+							window.location.reload();
+						}
 					}, 1500);
 				})
 				.catch((err) => {

@@ -1,18 +1,19 @@
 import React from "react";
-import ReportAdd from "../../../Components/ReportAdd/ReportAdd";
+import InventoryTableView from "../../../Components/Inventory/InventoryTableView/InventoryTableView";
 import Footer from "./../../../Components/Footer/footer";
 import NavBar from "./../../../Components/NavBar/navbar2";
 
-const AddReportPage = () => {
+const InventoryTable = () => {
 	return (
 		<>
 			<div className="bg-main-blue">
 				<NavBar />
-				<ReportAdd />
+				<InventoryTableView />
 				<Footer />
 			</div>
 		</>
 	);
 };
 
-export default AddReportPage;
+export default InventoryTable;
+

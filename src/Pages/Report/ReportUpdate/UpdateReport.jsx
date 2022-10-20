@@ -10,15 +10,17 @@ import AddIcon from "@mui/icons-material/Add";
 import Icon from "@mui/material/Icon";
 import axios from "axios";
 import "antd/dist/antd.min.css";
+import Footer from "./../../../Components/Footer/footer";
+import NavBar from "./../../../Components/NavBar/navbar2";
 //import Notification from "../Notification/index";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { DatePicker, Space } from "antd";
 
 function UpdateReport() {
-	const [inputFields, setInputFields] = useState([
-		{ test: "", result: "", normalValues: "" },
-	]);
+	const [inputFields, setInputFields] = useState([[
+		{ test: "", result: "", normalValues: "", id:"" },
+	]]);
 
 	// const handleSubmit = (e) => {
 	//   e.preventDefault();
@@ -59,7 +61,7 @@ function UpdateReport() {
 
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [Gender, setGender] = useState("male");
+	const [gender, setGender] = useState("");
 	const [date, setDate] = useState("");
 	const [age, setAge] = useState("");
 	const [nic, setNic] = useState("");
@@ -124,7 +126,7 @@ function UpdateReport() {
 	}, [location]);
 
 	//console.log(firstName,lastName,Gender, date, age, nic, phoneNumber, testName);
-	const inputf = inputFields[0][0];
+	const inputf = inputFields[0];
 	console.log(inputf);
 	// on submit function
 	const submit = async (e) => {
@@ -140,7 +142,7 @@ function UpdateReport() {
 		const data = {
 			firstName: firstName,
 			lastName: lastName,
-			Gender: Gender,
+			Gender: gender,
 			date: date,
 			age: age,
 			nic: nic,
@@ -149,11 +151,11 @@ function UpdateReport() {
 			testData: inputFields,
 		};
 
-		console.log("result", data.result);
+		console.log("result", data.firstName);
 
 		try {
 			await axios
-				.put("api/report/update/" + id, {
+				.put(`api/report/update/` + id, {
 					headers: {
 						authentication:
 							localStorage.getItem("authentication"),
@@ -162,7 +164,7 @@ function UpdateReport() {
 				})
 				.then((res) => {
 					console.log("updated" + res.data);
-					window.location.href = "/patient/report/all";
+					//window.location.href = "/patient/report/all";
 					setNotify({
 						isOpen: true,
 						message: "Medical Report Updated Successfull!",
@@ -196,6 +198,7 @@ function UpdateReport() {
 
 	return (
 		<>
+		<NavBar />
 			<div class="overflow-x-auto">
 				<div className="flex justify-center item-center">
 					<div class="min-w-screen min-h-fit flex justify-center font-sans overflow-hidden">
@@ -206,7 +209,7 @@ function UpdateReport() {
 								</h1>
 							</div>
 							<form
-								onSubmit={submit}
+								
 								className=" w-[100%] h-auto rounded-xl p-5">
 								<p
 									className="text-red-600 mb-10 text-sm"
@@ -218,6 +221,7 @@ function UpdateReport() {
 									<div class="grid md:grid-cols-2 md:gap-6 px-20 py-5">
 										<div class="relative z-0 mb-6 w-full group">
 											<input
+											
 												type="text"
 												name="firstName"
 												id="firstName"
@@ -268,6 +272,8 @@ function UpdateReport() {
 												<li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														    disabled={gender !== "male"}
+															checked={gender === "male"}
 															id="radio-Male"
 															type="radio"
 															value="male"
@@ -294,6 +300,8 @@ function UpdateReport() {
 												<li class="w-full border-b border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														  	disabled={gender !== "female"}
+															  checked={gender === "female"}
 															id="radio-Female"
 															type="radio"
 															value="female"
@@ -322,7 +330,7 @@ function UpdateReport() {
 										<div class="relative z-0 mt-6 w-full group">
 											<input
 												type="text"
-												value={date}
+												value={date.split("T")[0]}
 											/>
 
 											<Space
@@ -419,10 +427,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "bloodSugar"}
+														checked={testName === "bloodSugar"}
 															id="bloodSugar"
 															type="radio"
 															value="bloodSugar"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
 															onChange={(
 																e,
@@ -444,10 +454,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "psa"}
+														checked={testName === "psa"}
 															id="psa"
 															type="radio"
 															value="psa"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -469,10 +481,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "fab"}
+														checked={testName === "fab"}
 															id="fab"
 															type="radio"
 															value="fab"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -494,10 +508,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "CardiacP"}
+														checked={testName === "CardiacP"}
 															id="CardiacP"
 															type="radio"
 															value="CardiacP"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -519,10 +535,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "esr"}
+														checked={testName === "esr"}
 															id="esr"
 															type="radio"
 															value="esr"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -544,10 +562,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "ggt"}
+														checked={testName === "ggt"}
 															id="ggt"
 															type="radio"
 															value="ggt"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -571,10 +591,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "ironS"}
+														checked={testName === "ironS"}
 															id="ironS"
 															type="radio"
 															value="ironS"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -596,10 +618,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-white sm:border-b-0 sm:border-">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "plateCount"}
+														checked={testName === "plateCount"}
 															id="plateCount"
 															type="radio"
 															value="plateCount"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
 															onChange={(
 																e,
@@ -621,10 +645,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "rProfile"}
+														checked={testName === "rProfile"}
 															id="rProfile"
 															type="radio"
 															value="rProfile"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
 															onChange={(
 																e,
@@ -646,10 +672,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "urineRoutine"}
+														checked={testName === "urineRoutine"}
 															id="urineRoutine"
 															type="radio"
 															value="urineRoutine"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
 															onChange={(
 																e,
@@ -671,10 +699,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "sChemistry"}
+														checked={testName === "sChemistry"}
 															id="sChemistry"
 															type="radio"
 															value="sChemistry"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
 															onChange={(
 																e,
@@ -696,10 +726,12 @@ function UpdateReport() {
 												<li class="w-full border-none border-gray-200 sm:border-b-0 sm:border-r dark:border-white">
 													<div class="flex items-center pl-3">
 														<input
+														disabled={testName !== "hcv"}
+														checked={testName === "hcv"}
 															id="hcv"
 															type="radio"
 															value="hcv"
-															name="radio"
+															name="list-radio"
 															class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2"
 															onChange={(
 																e,
@@ -728,7 +760,9 @@ function UpdateReport() {
 												(ifields, index) => {
 													const dd = ifields[0];
 													console.log(ifields)
+													
 													return(
+														
 													<div key={index}>
 														<TextField
 															style={{
@@ -740,7 +774,7 @@ function UpdateReport() {
 															label="Test"
 															variant="filled"
 															value={
-																inputFields.test
+																dd.test
 															}
 															// onChange={(
 															// 	event,
@@ -764,7 +798,7 @@ function UpdateReport() {
 															label="Result"
 															variant="filled"
 															value={
-																inputFields.result
+																dd.result
 															}
 															// onChange={(
 															// 	event,
@@ -785,7 +819,7 @@ function UpdateReport() {
 															label="Normal Values"
 															variant="filled"
 															value={
-																inputFields.normalValues
+																dd.normalValues
 															}
 															// onChange={(
 															// 	event,
@@ -830,6 +864,7 @@ function UpdateReport() {
 				</div>
 			</div>
 			{/* <Notification notify={notify} setNotify={setNotify} /> */}
+			<Footer />
 		</>
 	);
 }

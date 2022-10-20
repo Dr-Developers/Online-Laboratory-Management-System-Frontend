@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable no-undef */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* This example requires Tailwind CSS v2.0+ */
@@ -8,8 +9,6 @@ import "./navbar.css";
 function NavBar() {
 	const login = localStorage.getItem("isLoggedIn");
 	const id = localStorage.getItem("id");
-
-	console.log("id", id);
 
 	const logout = async () => {
 		console.log("logout");
@@ -30,26 +29,27 @@ function NavBar() {
 	return (
 		<div className="bg-main-blue">
 			<nav>
-				<a class="active" href="/">
+				<a class="active" href="/" id="home">
 					Home
 				</a>
+
 				<a href="/about">About</a>
-				<a href="#">Contact Us</a>
-				<a href="#">Services</a>
+				<a href="#">Contact</a>
+
+				{login ? (
+					<a href="/profile">Profile</a>
+				) : (
+					<a href="/login" id="login">
+						Login
+					</a>
+				)}
+
 				{login ? (
 					<a href="/login" onClick={logout}>
 						Logout
 					</a>
 				) : (
 					<a href="/patient/register">Register</a>
-				)}
-
-				{login ? (
-					<a href="/">Profile</a>
-				) : (
-					<a href="/login" id="login">
-						Login
-					</a>
 				)}
 
 				<a href="/" class="LogoName">

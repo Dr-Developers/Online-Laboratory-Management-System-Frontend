@@ -1,15 +1,15 @@
 import React from "react";
-import AppointmentAdd from "../../../Components/AppointmentAdd/AppointmentAdd";
+import AddInventory from "../../../Components/Inventory/AddInventory/AddInventory";
 import Footer from "../../../Components/Footer/footer";
 import NavBar from "../../../Components/NavBar/navbar2";
 
-const AddAppointmentPage = () => {
+const AddInventoryPage = () => {
 	return (
 		<>
 			<div className="bg-main-blue">
 				<NavBar />
 				<div className="flex justify-center items-center">
-				<AppointmentAdd />
+				<AddInventory />
 				</div>
 				<Footer />
 			</div>
@@ -17,5 +17,5 @@ const AddAppointmentPage = () => {
 	);
 };
 
-export default AddAppointmentPage;
+export default AddInventoryPage;
 

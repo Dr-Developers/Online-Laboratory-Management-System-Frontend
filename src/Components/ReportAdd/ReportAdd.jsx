@@ -2,7 +2,7 @@ import React from "react";
 //import './App.css';
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -60,7 +60,7 @@ function ReportAdd() {
 
 	const error = document.getElementById("errorMessage");
 
-	// error handling
+	//error handling
 	const errorhandling = () => {
 		if (
 			firstName === "" ||
@@ -79,6 +79,39 @@ function ReportAdd() {
 		}
 	};
 
+	const [validation, setValidation] = useState({
+		firstName: '',
+		lastName: '',
+		nic: '',
+		age: '',
+		phoneNumber: '',
+	  });
+
+	  const checkValidation = () => {
+		let errors = JSON.parse(JSON.stringify(validation));
+
+	
+		//first Name validation
+		if(!firstName.trim()) {
+		  errors.firstName = "First name is required";
+		} else {
+		  errors.firstName = "";
+		}
+		//last Name validation
+		if (!lastName.trim()) {
+		  errors.lastName = "Last name is required";
+		} else {
+		  errors.lastName = "";
+		}
+	
+		setValidation(errors);
+	  };
+	
+	  useEffect(() => {
+		checkValidation();
+	  },[]);
+	
+
 	// on submit function
 	const submit = async (e) => {
 		e.preventDefault();
@@ -86,7 +119,7 @@ function ReportAdd() {
 		//const inputs = []
 		//result.push(inputFields)
 		//console.log("InputFields", result);
-		errorhandling();
+		 errorhandling();
 		console.log(localStorage.getItem("authentication"));
 		//setResult(inputFields)
 
@@ -287,6 +320,8 @@ function ReportAdd() {
 												id="nic"
 												class="block py-2.5 px-0 w-full text-sm text-button-blue bg-transparent border-0 border-b-2 border-button-blue appearance-none dark:text-button-blue dark:border-button-blue dark:focus:border-button-blue focus:outline-none focus:ring-0 focus:border-button-blue peer"
 												placeholder=" "
+												pattern="^([0-9]{9}[x|X|v|V]|[0-9]{12})$"
+													title="Please enter valid NIC Number ex: xxxxxxxxV / xxxxxxxxxv / xxxxxxxxxxxx"
 												required=""
 												onChange={(e) =>
 													setNic(e.target.value)
